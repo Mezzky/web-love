@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bunga untuk Cacakk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --rose: #ff6b81;
+        --rose-deep: #b83258;
+        --petal-light: #fff8fa;
+        --petal-mid: #ffd6e0;
+        --petal-deep: #ff8fa3;
+        --sky: #fff8fa;
+        --mist: #fff0f5;
+        --leaf: #8fc7a4;
+        --leaf-dark: #4f8b68;
+        --gold: #ffd166;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100svh;
+        margin: 0;
+        overflow: hidden;
+        font-family: "Poppins", system-ui, sans-serif;
+        background:
+          radial-gradient(circle at 18% 18%, rgba(255, 107, 129, 0.2), transparent 28%),
+          radial-gradient(circle at 78% 12%, rgba(189, 224, 254, 0.32), transparent 30%),
+          radial-gradient(circle at 52% 72%, rgba(255, 214, 224, 0.36), transparent 42%),
+          linear-gradient(180deg, var(--sky) 0%, var(--mist) 58%, #ffe5ec 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          linear-gradient(90deg, rgba(255, 214, 224, 0.22) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(255, 214, 224, 0.18) 1px, transparent 1px);
+        background-size: 110px 110px;
+        mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent 72%);
+        pointer-events: none;
+      }
+
+      .back-button {
+        position: fixed;
+        top: 22px;
+        left: 22px;
+        z-index: 20;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 18px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.78);
+        color: var(--rose-deep);
+        border: 1px solid rgba(255, 107, 129, 0.2);
+        box-shadow: 0 16px 34px rgba(121, 45, 66, 0.12);
+        backdrop-filter: blur(14px);
+        text-decoration: none;
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+
+      .music-button {
+        position: fixed;
+        top: 22px;
+        right: 22px;
+        z-index: 20;
+        width: 44px;
+        height: 44px;
+        display: inline-grid;
+        place-items: center;
+        border: 1px solid rgba(255, 107, 129, 0.2);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.78);
+        color: var(--rose-deep);
+        box-shadow: 0 16px 34px rgba(121, 45, 66, 0.12);
+        backdrop-filter: blur(14px);
+        font: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .music-button:hover {
+        transform: translateY(-1px);
+      }
+
+      .garden {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: end center;
+        isolation: isolate;
+      }
+
+      .garden::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -10svh;
+        width: 132vw;
+        height: 46svh;
+        transform: translateX(-50%);
+        border-radius: 50% 50% 0 0;
+        background:
+          radial-gradient(ellipse at center, rgba(143, 199, 164, 0.42), transparent 62%),
+          linear-gradient(180deg, rgba(183, 223, 197, 0.28), rgba(255, 214, 224, 0.22));
+        z-index: -1;
+      }
+
+      .grass-bed {
+        position: absolute;
+        left: 50%;
+        bottom: -1svh;
+        width: 112vw;
+        height: 26svh;
+        transform: translateX(-50%);
+        pointer-events: none;
+        z-index: 6;
+      }
+
+      .grass,
+      .ground-leaf {
+        position: absolute;
+        bottom: 0;
+        transform-origin: bottom center;
+        animation: grass-sway 5.6s ease-in-out infinite;
+        animation-delay: var(--d);
+      }
+
+      .grass {
+        left: var(--x);
+        width: var(--w);
+        height: var(--h);
+        border-radius: 999px 999px 0 0;
+        background: linear-gradient(180deg, #b7dfc5, var(--leaf-dark));
+        transform: rotate(var(--r));
+      }
+
+      .ground-leaf {
+        left: var(--x);
+        width: var(--w);
+        height: var(--h);
+        border-radius: 100% 0 100% 0;
+        background: linear-gradient(135deg, #c8edcf, var(--leaf));
+        transform: rotate(var(--r));
+        opacity: 0.86;
+      }
+
+      .stem {
+        position: absolute;
+        bottom: -2svh;
+        left: 50%;
+        width: clamp(7px, 0.75vw, 12px);
+        height: var(--h);
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--leaf-dark), var(--leaf));
+        transform-origin: bottom center;
+        transform: translateX(var(--x)) rotate(var(--r));
+        animation: grow-stem 1.55s ease-out both, sway 6.8s ease-in-out infinite;
+        animation-delay: var(--d), calc(var(--d) + 1.55s);
+        filter: drop-shadow(0 12px 16px rgba(79, 139, 104, 0.12));
+      }
+
+      .stem::before,
+      .stem::after {
+        content: "";
+        position: absolute;
+        top: var(--leaf-y);
+        width: clamp(34px, 4.5vw, 62px);
+        height: clamp(16px, 2vw, 27px);
+        border-radius: 100% 0 100% 0;
+        background: linear-gradient(135deg, #c2e8ce, var(--leaf));
+        opacity: 0;
+        animation: leaf-in 0.75s ease-out forwards;
+        animation-delay: calc(var(--d) + 0.75s);
+      }
+
+      .stem::before {
+        left: clamp(-58px, -4vw, -36px);
+        transform: rotate(-22deg);
+      }
+
+      .stem::after {
+        right: clamp(-58px, -4vw, -36px);
+        transform: scaleX(-1) rotate(-22deg);
+      }
+
+      .flower {
+        position: absolute;
+        left: 50%;
+        top: calc(var(--size) * -0.28);
+        width: var(--size);
+        height: var(--size);
+        transform: translateX(-50%) scale(0);
+        animation: bloom 1.05s cubic-bezier(0.2, 0.86, 0.18, 1.16) forwards;
+        animation-delay: calc(var(--d) + 1.05s);
+      }
+
+      .petal {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 44%;
+        height: 59%;
+        border-radius: 82% 82% 56% 56%;
+        background: linear-gradient(180deg, var(--petal-light), var(--petal-mid) 34%, var(--petal-deep));
+        transform-origin: 50% 94%;
+        transform: translate(-50%, -95%) rotate(var(--angle));
+        box-shadow: inset 0 6px 14px rgba(255, 255, 255, 0.45);
+      }
+
+      .center {
+        position: absolute;
+        inset: 35%;
+        border-radius: 50%;
+        background: radial-gradient(circle, #fff0ad 0 30%, var(--gold) 72%);
+        box-shadow: 0 0 22px rgba(255, 209, 102, 0.34);
+      }
+
+      .sparkle,
+      .heart {
+        position: absolute;
+        pointer-events: none;
+      }
+
+      .sparkle {
+        left: var(--x);
+        top: var(--y);
+        width: var(--s);
+        height: var(--s);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.72);
+        box-shadow: 0 0 18px rgba(255, 107, 129, 0.28);
+        animation: twinkle 4.8s ease-in-out infinite;
+        animation-delay: var(--d);
+      }
+
+      .heart {
+        left: var(--x);
+        bottom: -30px;
+        color: rgba(255, 107, 129, 0.26);
+        font-size: var(--s);
+        animation: float-heart 12s linear infinite;
+        animation-delay: var(--d);
+      }
+
+      @keyframes grow-stem {
+        from {
+          scale: 1 0;
+        }
+        to {
+          scale: 1 1;
+        }
+      }
+
+      @keyframes leaf-in {
+        from {
+          opacity: 0;
+          scale: 0.6;
+        }
+        to {
+          opacity: 0.92;
+          scale: 1;
+        }
+      }
+
+      @keyframes bloom {
+        to {
+          transform: translateX(-50%) scale(1);
+        }
+      }
+
+      @keyframes sway {
+        0%,
+        100% {
+          rotate: 0deg;
+        }
+        50% {
+          rotate: 1.6deg;
+        }
+      }
+
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.18;
+          transform: scale(0.7);
+        }
+        50% {
+          opacity: 0.9;
+          transform: scale(1.08);
+        }
+      }
+
+      @keyframes float-heart {
+        0% {
+          translate: 0 0;
+          opacity: 0;
+        }
+        18%,
+        76% {
+          opacity: 1;
+        }
+        100% {
+          translate: 26px -110svh;
+          opacity: 0;
+        }
+      }
+
+      @keyframes grass-sway {
+        0%,
+        100% {
+          rotate: 0deg;
+        }
+        50% {
+          rotate: 3deg;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .back-button {
+          top: 16px;
+          left: 16px;
+          min-height: 42px;
+          padding: 0 16px;
+        }
+
+        .music-button {
+          top: 16px;
+          right: 16px;
+          width: 42px;
+          height: 42px;
+        }
+
+        .stem {
+          width: 7px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="back-button" href="/">Kembali</a>
+    <button class="music-button" id="music-toggle" type="button" aria-label="Pause musik">||</button>
+    <audio
+      id="flower-music"
+      autoplay
+      loop
+      preload="auto"
+      src="https://9qw845bekg.ufs.sh/f/8rOnxF43ANYqHtdFaZChrVl48acYXH1jLFJ05EfAPxnKhwiZ"
+    ></audio>
+
+    <main class="garden" aria-label="Bunga animasi">
+      <div class="stem" style="--x: -48vw; --r: 7deg; --h: 36svh; --d: 0.34s; --size: clamp(58px, 6vw, 94px); --leaf-y: 50%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: -43vw; --r: -12deg; --h: 45svh; --d: 0.1s; --size: clamp(72px, 8vw, 124px); --leaf-y: 48%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: -39vw; --r: -3deg; --h: 51svh; --d: 0.62s; --size: clamp(62px, 6.4vw, 104px); --leaf-y: 56%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: -34vw; --r: 9deg; --h: 58svh; --d: 0.25s; --size: clamp(86px, 9vw, 142px); --leaf-y: 42%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: -25vw; --r: -7deg; --h: 50svh; --d: 0.45s; --size: clamp(74px, 7vw, 112px); --leaf-y: 55%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: -20vw; --r: 10deg; --h: 43svh; --d: 0.72s; --size: clamp(60px, 6vw, 96px); --leaf-y: 52%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: -15vw; --r: 5deg; --h: 67svh; --d: 0.15s; --size: clamp(96px, 10vw, 158px); --leaf-y: 45%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: -10vw; --r: -10deg; --h: 49svh; --d: 0.56s; --size: clamp(68px, 6.8vw, 108px); --leaf-y: 58%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: -5vw; --r: -3deg; --h: 60svh; --d: 0.35s; --size: clamp(84px, 8vw, 130px); --leaf-y: 50%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: 6vw; --r: 4deg; --h: 72svh; --d: 0.05s; --size: clamp(104px, 11vw, 172px); --leaf-y: 43%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: 11vw; --r: -4deg; --h: 46svh; --d: 0.68s; --size: clamp(62px, 6.3vw, 102px); --leaf-y: 54%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: 17vw; --r: -8deg; --h: 54svh; --d: 0.42s; --size: clamp(74px, 7.5vw, 118px); --leaf-y: 54%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: 23vw; --r: 3deg; --h: 45svh; --d: 0.76s; --size: clamp(58px, 5.8vw, 94px); --leaf-y: 57%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: 28vw; --r: 8deg; --h: 64svh; --d: 0.22s; --size: clamp(88px, 9vw, 142px); --leaf-y: 46%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: 34vw; --r: -5deg; --h: 53svh; --d: 0.5s; --size: clamp(72px, 7vw, 114px); --leaf-y: 50%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: 40vw; --r: -10deg; --h: 48svh; --d: 0.52s; --size: clamp(70px, 7vw, 108px); --leaf-y: 53%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+      <div class="stem" style="--x: 47vw; --r: 10deg; --h: 39svh; --d: 0.64s; --size: clamp(58px, 5.8vw, 92px); --leaf-y: 52%">
+        <div class="flower">
+          <span class="petal" style="--angle: 0deg"></span><span class="petal" style="--angle: 60deg"></span><span class="petal" style="--angle: 120deg"></span><span class="petal" style="--angle: 180deg"></span><span class="petal" style="--angle: 240deg"></span><span class="petal" style="--angle: 300deg"></span><span class="center"></span>
+        </div>
+      </div>
+
+      <div class="grass-bed" aria-hidden="true">
+        <span class="grass" style="--x: 2%; --w: 7px; --h: 18svh; --r: -8deg; --d: 0s"></span>
+        <span class="grass" style="--x: 7%; --w: 9px; --h: 24svh; --r: 6deg; --d: .6s"></span>
+        <span class="grass" style="--x: 13%; --w: 6px; --h: 16svh; --r: -4deg; --d: .3s"></span>
+        <span class="grass" style="--x: 19%; --w: 8px; --h: 26svh; --r: 9deg; --d: .9s"></span>
+        <span class="grass" style="--x: 25%; --w: 7px; --h: 20svh; --r: -10deg; --d: .2s"></span>
+        <span class="grass" style="--x: 32%; --w: 9px; --h: 28svh; --r: 5deg; --d: .8s"></span>
+        <span class="grass" style="--x: 39%; --w: 6px; --h: 18svh; --r: -6deg; --d: .4s"></span>
+        <span class="grass" style="--x: 46%; --w: 9px; --h: 27svh; --r: 8deg; --d: .7s"></span>
+        <span class="grass" style="--x: 53%; --w: 7px; --h: 22svh; --r: -9deg; --d: .1s"></span>
+        <span class="grass" style="--x: 61%; --w: 8px; --h: 26svh; --r: 6deg; --d: .5s"></span>
+        <span class="grass" style="--x: 69%; --w: 6px; --h: 18svh; --r: -5deg; --d: .9s"></span>
+        <span class="grass" style="--x: 76%; --w: 9px; --h: 25svh; --r: 7deg; --d: .3s"></span>
+        <span class="grass" style="--x: 84%; --w: 7px; --h: 20svh; --r: -8deg; --d: .6s"></span>
+        <span class="grass" style="--x: 92%; --w: 9px; --h: 27svh; --r: 5deg; --d: .2s"></span>
+        <span class="ground-leaf" style="--x: 9%; --w: 74px; --h: 32px; --r: -18deg; --d: .2s"></span>
+        <span class="ground-leaf" style="--x: 29%; --w: 92px; --h: 38px; --r: 14deg; --d: .7s"></span>
+        <span class="ground-leaf" style="--x: 48%; --w: 80px; --h: 34px; --r: -12deg; --d: .4s"></span>
+        <span class="ground-leaf" style="--x: 70%; --w: 96px; --h: 40px; --r: 16deg; --d: .8s"></span>
+        <span class="ground-leaf" style="--x: 86%; --w: 76px; --h: 32px; --r: -14deg; --d: .3s"></span>
+      </div>
+    </main>
+
+    <span class="sparkle" style="--x: 18%; --y: 18%; --s: 8px; --d: 0s"></span>
+    <span class="sparkle" style="--x: 34%; --y: 12%; --s: 6px; --d: 1.3s"></span>
+    <span class="sparkle" style="--x: 68%; --y: 16%; --s: 9px; --d: 0.8s"></span>
+    <span class="sparkle" style="--x: 82%; --y: 34%; --s: 7px; --d: 1.8s"></span>
+    <span class="heart" style="--x: 12%; --s: 16px; --d: 0s">&hearts;</span>
+    <span class="heart" style="--x: 26%; --s: 12px; --d: 3s">&hearts;</span>
+    <span class="heart" style="--x: 74%; --s: 15px; --d: 1.4s">&hearts;</span>
+    <span class="heart" style="--x: 88%; --s: 12px; --d: 4.1s">&hearts;</span>
+    <script>
+      const audio = document.getElementById("flower-music");
+      const toggle = document.getElementById("music-toggle");
+
+      audio.volume = 0.32;
+
+      const syncButton = () => {
+        toggle.textContent = audio.paused ? "▶" : "||";
+        toggle.setAttribute("aria-label", audio.paused ? "Putar musik" : "Pause musik");
+      };
+
+      audio.play().then(syncButton).catch(syncButton);
+      audio.addEventListener("play", syncButton);
+      audio.addEventListener("pause", syncButton);
+
+      toggle.addEventListener("click", () => {
+        if (audio.paused) {
+          audio.play().catch(syncButton);
+          return;
+        }
+        audio.pause();
+      });
+    </script>
+  </body>
+</html>

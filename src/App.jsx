@@ -5,7 +5,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Heart,
-  Mail,
   Pause,
   Play,
   Sparkles,
@@ -17,6 +16,7 @@ import { memories, reasons, timeline } from "./data/memories.js";
 import { quotes } from "./data/quotes.js";
 
 const startDate = new Date("2024-01-14T20:00:00+08:00");
+const musicUrl = "https://9qw845bekg.ufs.sh/f/8rOnxF43ANYqHtdFaZChrVl48acYXH1jLFJ05EfAPxnKhwiZ";
 
 function useRelationshipCounter() {
   const [now, setNow] = useState(() => new Date());
@@ -35,6 +35,23 @@ function useRelationshipCounter() {
       seconds: Math.floor((diff / 1000) % 60),
     };
   }, [now]);
+}
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(max-width: 760px)").matches;
+  });
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 760px)");
+    const update = () => setIsMobile(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  return isMobile;
 }
 
 function FloatingHearts() {
@@ -62,7 +79,7 @@ function LetterGate({ onOpen }) {
   const openLetter = () => {
     if (opening) return;
     setOpening(true);
-    window.setTimeout(onOpen, 1500);
+    window.setTimeout(onOpen, 720);
   };
 
   return (
@@ -70,7 +87,7 @@ function LetterGate({ onOpen }) {
       className="letter-gate"
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.7, delay: 0.8 }}
+      transition={{ duration: 0.35, delay: 0.2 }}
     >
       <div className="flower-field" aria-hidden="true">
         {Array.from({ length: 16 }).map((_, index) => (
@@ -102,8 +119,8 @@ function LetterGate({ onOpen }) {
         initial={{ opacity: 0, scale: 0.82, x: "-50%", y: 28 }}
         animate={{ opacity: 1, scale: 1, x: "-50%", y: [0, -14, 0] }}
         transition={{
-          opacity: { duration: 0.55, delay: 0.45 },
-          scale: { duration: 0.55, delay: 0.45 },
+          opacity: { duration: 0.45, delay: 0.2 },
+          scale: { duration: 0.45, delay: 0.2 },
           y: { duration: 4.2, repeat: Infinity, ease: "easeInOut" },
         }}
         whileHover={{ scale: 1.04, rotate: -1.5 }}
@@ -111,8 +128,7 @@ function LetterGate({ onOpen }) {
       >
         <span className="letter-flap" />
         <span className="letter-body">
-          <Mail size={48} strokeWidth={1.55} />
-          <strong>Untuk Cacakk</strong>
+          <span className="letter-seal" />
         </span>
       </motion.button>
       <AnimatePresence>
@@ -122,7 +138,7 @@ function LetterGate({ onOpen }) {
             initial={{ clipPath: "circle(0% at 50% 54%)", opacity: 0.96 }}
             animate={{ clipPath: "circle(145% at 50% 54%)", opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.25, ease: [0.76, 0, 0.24, 1] }}
+            transition={{ duration: 0.72, ease: [0.76, 0, 0.24, 1] }}
           />
         )}
       </AnimatePresence>
@@ -155,12 +171,14 @@ function Opening({ onStart }) {
 }
 
 function Section({ id, eyebrow, title, children, className = "" }) {
+  const isMobile = useIsMobile();
+
   return (
     <motion.section
       id={id}
       className={`section ${className}`}
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={isMobile ? false : { opacity: 0, y: 28 }}
+      whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.18 }}
       transition={{ duration: 0.9, ease: "easeOut" }}
     >
@@ -199,23 +217,28 @@ function Timeline() {
 
 function Gallery() {
   const [active, setActive] = useState(null);
+  const isMobile = useIsMobile();
+  const showPrevious = () => setActive((active - 1 + memories.length) % memories.length);
+  const showNext = () => setActive((active + 1) % memories.length);
 
   return (
     <Section id="memories" eyebrow="Yang Ucaa simpan" title="Kenangan">
       <div className="gallery-grid">
         {memories.map((memory, index) => (
-          <button
+          <motion.button
             className="memory-card"
             key={memory.title}
             onClick={() => setActive(index)}
             aria-label={`Lihat ${memory.title}`}
+            initial={isMobile ? { opacity: 0, y: 24 } : false}
+            whileInView={isMobile ? { opacity: 1, y: 0 } : undefined}
+            viewport={{ once: true, amount: 0.32 }}
+            transition={{ duration: 0.58, delay: isMobile ? Math.min(index * 0.06, 0.24) : 0 }}
           >
             <div className="memory-visual" style={{ background: memory.background }}>
               <span>{memory.icon}</span>
             </div>
-            <strong>{memory.title}</strong>
-            <small>{memory.caption}</small>
-          </button>
+          </motion.button>
         ))}
       </div>
       <AnimatePresence>
@@ -231,8 +254,12 @@ function Gallery() {
             <button className="icon-button close" onClick={() => setActive(null)} aria-label="Tutup">
               <X size={22} />
             </button>
+            <button className="icon-button lightbox-nav lightbox-nav-prev" onClick={showPrevious} aria-label="Foto sebelumnya">
+              <ChevronLeft />
+            </button>
             <motion.div
-              className="lightbox-panel"
+              className="lightbox-panel gallery-preview"
+              key={active}
               initial={{ scale: 0.95, y: 16 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.96, y: 10 }}
@@ -241,9 +268,10 @@ function Gallery() {
               <div className="memory-visual large" style={{ background: memories[active].background }}>
                 <span>{memories[active].icon}</span>
               </div>
-              <h3>{memories[active].title}</h3>
-              <p>{memories[active].caption}</p>
             </motion.div>
+            <button className="icon-button lightbox-nav lightbox-nav-next" onClick={showNext} aria-label="Foto berikutnya">
+              <ChevronRight />
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -252,11 +280,21 @@ function Gallery() {
 }
 
 function Reasons() {
+  const isMobile = useIsMobile();
+
   return (
     <Section id="reasons" eyebrow="Tentang Cacakk" title="Tentangmu">
       <div className="reason-grid">
-        {reasons.map((reason) => (
-          <motion.article className="reason-card" key={reason} whileHover={{ y: -4 }}>
+        {reasons.map((reason, index) => (
+          <motion.article
+            className="reason-card"
+            key={reason}
+            initial={isMobile ? { opacity: 0, y: 24 } : false}
+            whileInView={isMobile ? { opacity: 1, y: 0 } : undefined}
+            viewport={{ once: true, amount: 0.32 }}
+            transition={{ duration: 0.58, delay: isMobile ? Math.min(index * 0.06, 0.24) : 0 }}
+            whileHover={{ y: -4 }}
+          >
             <Sparkles size={22} />
             <p>{reason}</p>
           </motion.article>
@@ -276,7 +314,7 @@ function Quotes() {
   }, []);
 
   return (
-    <Section id="quotes" eyebrow="Catatan Ucaa" title="Bisik">
+    <Section id="quotes" eyebrow="Catatan Ucaa" title="Isi Hati Uca">
       <div className="quote-panel">
         <button
           className="icon-button"
@@ -310,6 +348,7 @@ function Quotes() {
 
 function Counter() {
   const time = useRelationshipCounter();
+  const isMobile = useIsMobile();
   const items = [
     ["Hari", time.days],
     ["Jam", time.hours],
@@ -320,11 +359,18 @@ function Counter() {
   return (
     <Section id="counter" eyebrow="Sejak kita mulai" title="Waktu">
       <div className="counter-grid">
-        {items.map(([label, value]) => (
-          <div className="counter-box" key={label}>
+        {items.map(([label, value], index) => (
+          <motion.div
+            className="counter-box"
+            key={label}
+            initial={isMobile ? { opacity: 0, y: 22 } : false}
+            whileInView={isMobile ? { opacity: 1, y: 0 } : undefined}
+            viewport={{ once: true, amount: 0.36 }}
+            transition={{ duration: 0.55, delay: isMobile ? Math.min(index * 0.05, 0.2) : 0 }}
+          >
             <strong>{String(value).padStart(2, "0")}</strong>
             <span>{label}</span>
-          </div>
+          </motion.div>
         ))}
       </div>
       <p className="counter-note">
@@ -335,42 +381,27 @@ function Counter() {
 }
 
 function LoveLetter() {
+  const isMobile = useIsMobile();
+  const paragraphs = [
+    "Aku mau bilang sesuatu,walaupun kita LDR, tapi rasanya ngga pernah hambar walaupunn kadang aku yang ngebuat dirimu merasa jengkel akan tingkah peduli cacakk tapii ituu semua cacak tulus dan sayang banget tauu ke melmel. Justru seru, karena kita sama-sama berjuang buat hubungan ini. Dan dari semua yang aku lihat, aku bisa bilang… kamu adalah perempuan terkuat dan terkeren yang pernah aku kenal.",
+    "Kamu bisa berdiri di kaki kamu sendiri, kamu kuat, kamu sabar, kamu cantik, kamu pintar, dan kamu punya hati yang besar. Aku bangga banget sama kamu. Terima kasih ya sayang, sudah bertahan sejauh ini, pasti versi kecil kamu yang dulu sangat bangga sama kamu yang sekarang, sudah tetap kuat, dan aku juga sangat berterimakasih karena kamu sudah hadir di hidup aku. Kamu benar-benar keren, dan aku tahu ke depannya kamu akan jadi versi yang lebih hebat lagi, aku bersyukur banget punya kamu💗🥹🫂.Maaff jikaa cacakk adaa buat salahh ke dirimuu selama kamu kenal cacakk yaaa,kadangg cacak juga ga ngertii gimana perasaan melmell,apa yang melmell rasakan tapi.....akuu berharap dirimu bakal terus jadi melmel yang cacak kenal yaaa🥰",
+    'Cacakk sampai in pesan ini karna cacak berterima kasih dan cacakk bersyukurr dulu kenal kamu untuk pertama kali.Dari main ml,curhatt tentang keadaan masingg"dan sampai duluu kita asing yaaa😖 karna cacak ngelakuin kesalahan sampe melmell nangiss hmmm:(,tapii kenapaa cacakk memilih dirimu menjadi sosok pendamping ku sampai akhir hayat cacakk adalah.....kamuu adalah wanita yang bener"kriteria cacakk dari value mu,tekad muu menghadapi rintangan di bumi ini🌎,dan caramuu menyambut ku untuk pertama kali🫂🥹,karna cacakk duluu korban bullyy hehee,cara dirimu menyambut diriku dan cacakkk merasa nyaman di smping dirimu,walaupun kita LDR saat kita saling berbicara satu nada handphone rasanya semua rasa capek cacak dan rintangan ituu ringan bangett.dan cacakk mauu kamuu jadii wanitaa terakhir cacakk sampaiii cacakk tua nantii dan yapppp menua bersama💕🫶🏻💗🫂. Hari ini ku sampaikan pesan ini tulus untuk mu dan rasa sayang ku ke kamuu... MAKASII YAAA SEKALII LAGII DARI DIRIKU UNTUK DIRIMU MELL....🫶🏻💝,SEMANGATT MENGEJAR MIMPII MUU YAAA,SEMANGATT NUGASNYAA DEMI APA YANG INGIN KAMUU CAPAI,KITA BERJALAN BERSAMA DISINI,KAMUU JANGAN TERLALU MEMBAWA BEBAN MU SENDIRI YAAA BAGI SEDIKIT DAN CERITA KAN KE CACAKK YAAA🫂🥹,CACAKK MENUNGGU MU WAHAII WANITA TERKUAT KU🫂🫶🏻.',
+  ];
+
   return (
     <Section id="letter" eyebrow="Surat dari Ucaa" title="Untukmu">
       <article className="letter">
-        <p>Cacakk,</p>
-        <p>
-          Aku mau bilang sesuatu yang mungkin sederhana, tapi aku pengin kamu membacanya pelan-pelan.
-          Walaupun kita LDR, rasanya tidak pernah benar-benar hambar buat aku. Ada rindu, ada kangen,
-          ada hari-hari yang berat, tapi tetap ada kamu yang bikin aku ingin terus bertahan.
-        </p>
-        <p>
-          Aku tahu kadang cara peduli aku bisa bikin kamu jengkel. Kadang aku belum paham perasaan
-          kamu seutuhnya, kadang aku juga salah baca keadaan. Tapi Cacakk, rasa sayang aku ke kamu
-          tulus. Aku mau belajar lebih lembut, lebih peka, dan lebih bisa jadi tempat kamu pulang
-          ketika kamu capek.
-        </p>
-        <p>
-          Aku bangga banget sama kamu. Kamu kuat, sabar, cantik, pintar, dan punya hati yang besar.
-          Versi kecil kamu pasti bangga melihat kamu yang sekarang. Dan Ucaa juga bangga, karena
-          bisa kenal Cacakk yang terus berjuang, terus berdiri, dan tetap punya hati yang hangat.
-        </p>
-        <p>
-          Terima kasih karena dulu kamu menyambut aku dengan baik. Dari main bareng, cerita tentang
-          keadaan masing-masing, sampai semua hal kecil yang bikin aku nyaman di samping kamu. Aku
-          tidak lupa. Bahkan saat kita pernah asing karena kesalahan aku, aku tetap belajar bahwa
-          kamu adalah seseorang yang sangat berarti buat aku.
-        </p>
-        <p>
-          Cacakk, semangat ya mengejar mimpi kamu. Semangat nugasnya, semangat menjalani hari-hari
-          yang tidak selalu mudah. Kamu tidak harus membawa semuanya sendirian. Kalau berat, bagi
-          sedikit ke Ucaa. Aku mungkin tidak selalu punya jawaban paling benar, tapi aku mau dengar.
-        </p>
-        <p>
-          Aku menunggu kamu, wanita terkuatku. Aku ingin kita terus berjalan bareng, pelan-pelan,
-          sampai nanti kita bisa melihat semua perjuangan ini dan bilang: ternyata kita sampai juga.
-        </p>
-        <p>Dari Ucaa, untuk Cacakk yang selalu aku sayangi.</p>
+        {paragraphs.map((paragraph, index) => (
+          <motion.p
+            key={paragraph}
+            initial={isMobile ? { opacity: 0, y: 22 } : false}
+            whileInView={isMobile ? { opacity: 1, y: 0 } : undefined}
+            viewport={{ once: true, amount: 0.24 }}
+            transition={{ duration: 0.58, delay: isMobile ? Math.min(index * 0.05, 0.18) : 0 }}
+          >
+            {paragraph}
+          </motion.p>
+        ))}
       </article>
     </Section>
   );
@@ -403,7 +434,7 @@ function MusicPlayer({ started }) {
 
   return (
     <div className="music-player">
-      <audio ref={audioRef} loop src="https://cdn.pixabay.com/audio/2022/03/15/audio_c8c8a73467.mp3" />
+      <audio ref={audioRef} autoPlay loop preload="auto" src={musicUrl} />
       <button className="icon-button" onClick={toggle} aria-label={playing ? "Pause musik" : "Putar musik"}>
         {playing ? <Pause /> : <Play />}
       </button>
@@ -434,7 +465,7 @@ function Ending() {
         <span className="eyebrow">Ucaa dan Cacakk</span>
         <h2>Selamanya</h2>
         <p>Terima kasih sudah hadir, bertahan, dan tetap jadi kamu yang Ucaa sayangi.</p>
-        <button className="primary-button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+        <button className="primary-button" onClick={() => { window.location.href = "/flower.html"; }}>
           <Heart size={19} fill="currentColor" />
           Ucaa Sayang Cacakk
         </button>
@@ -445,7 +476,7 @@ function Ending() {
 
 export default function App() {
   const [entered, setEntered] = useState(false);
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(true);
 
   const enterMainPage = () => {
     setEntered(true);
