@@ -15,8 +15,9 @@ import heroImage from "./assets/images/romantic-hero.png";
 import { memories, reasons, timeline } from "./data/memories.js";
 import { quotes } from "./data/quotes.js";
 
-const startDate = new Date("2024-01-14T20:00:00+08:00");
+const startDate = new Date("2026-03-23T00:00:00+08:00");
 const musicUrl = "https://9qw845bekg.ufs.sh/f/8rOnxF43ANYqHtdFaZChrVl48acYXH1jLFJ05EfAPxnKhwiZ";
+const videoUrl = "https://9qw845bekg.ufs.sh/f/8rOnxF43ANYqgxLjT4j8Fqr32PdVThbsjckO9plnvMHtIKuL";
 
 function useRelationshipCounter() {
   const [now, setNow] = useState(() => new Date());
@@ -215,6 +216,55 @@ function Timeline() {
   );
 }
 
+function VideoSection() {
+  const videoRef = useRef(null);
+  const isMobile = useIsMobile();
+  const [playing, setPlaying] = useState(false);
+
+  const toggleVideo = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
+      return;
+    }
+    videoRef.current.pause();
+    setPlaying(false);
+  };
+
+  return (
+    <Section id="video" eyebrow="Sebelum cerita" title="Cerita Perjalanan Kita">
+      <motion.div
+        className="video-story"
+        initial={isMobile ? { opacity: 0, y: 24 } : false}
+        whileInView={isMobile ? { opacity: 1, y: 0 } : undefined}
+        viewport={{ once: true, amount: 0.28 }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="video-frame">
+          <video
+            ref={videoRef}
+            src={videoUrl}
+            preload="metadata"
+            playsInline
+            controls
+            onPlay={() => setPlaying(true)}
+            onPause={() => setPlaying(false)}
+          />
+          <button className="video-toggle" type="button" onClick={toggleVideo} aria-label={playing ? "Pause video" : "Putar video"}>
+            {playing ? <Pause size={22} /> : <Play size={22} fill="currentColor" />}
+          </button>
+        </div>
+        <p className="video-note">
+          Sudahh lama yaaa ternyata... Andaii hp lama aku masih hidupp, banyak cerita diantara kita💕💕🥹.
+          TERIMA KASIH YAA KAMU UDAH HADIR DI HATI CACAKK DAN MEWARNAI KEHIDUPAN CACAKK😖🥹.
+          CINTAA CACAKK GABAKAL PERNAH PUDAR DARI 100% KE 0%. Percaya lahhh, laki-laki mu inii sedang berjuangg demi mencapai masa depan yang ia inginn, dan karna hadir mu juga jadi semangat buat dirikuu!!!
+          TERIMAKASIH KEMBALI YAA SAYANGG💕💕💕💗🥹. I LOVE U.
+        </p>
+      </motion.div>
+    </Section>
+  );
+}
+
 function Gallery() {
   const [active, setActive] = useState(null);
   const isMobile = useIsMobile();
@@ -236,7 +286,7 @@ function Gallery() {
             transition={{ duration: 0.58, delay: isMobile ? Math.min(index * 0.06, 0.24) : 0 }}
           >
             <div className="memory-visual" style={{ background: memory.background }}>
-              <span>{memory.icon}</span>
+              {memory.url ? <img src={memory.url} alt={memory.title} loading="lazy" /> : <span>{memory.icon}</span>}
             </div>
           </motion.button>
         ))}
@@ -266,7 +316,11 @@ function Gallery() {
               transition={{ duration: 0.45 }}
             >
               <div className="memory-visual large" style={{ background: memories[active].background }}>
-                <span>{memories[active].icon}</span>
+                {memories[active].url ? (
+                  <img src={memories[active].url} alt={memories[active].title} />
+                ) : (
+                  <span>{memories[active].icon}</span>
+                )}
               </div>
             </motion.div>
             <button className="icon-button lightbox-nav lightbox-nav-next" onClick={showNext} aria-label="Foto berikutnya">
@@ -358,10 +412,10 @@ function Counter() {
 
   return (
     <Section id="counter" eyebrow="Sejak kita mulai" title="Waktu">
-      <div className="counter-grid">
+      <div className="counter-single">
         {items.map(([label, value], index) => (
           <motion.div
-            className="counter-box"
+            className="counter-segment"
             key={label}
             initial={isMobile ? { opacity: 0, y: 22 } : false}
             whileInView={isMobile ? { opacity: 1, y: 0 } : undefined}
@@ -374,7 +428,7 @@ function Counter() {
         ))}
       </div>
       <p className="counter-note">
-        <CalendarHeart size={18} /> Sejak 14 Januari 2024, Cacakk masih belajar mencintai Melmell dengan lebih baik.
+        <CalendarHeart size={18} /> Sejak 23 Maret 2026, Cacakk masih belajar mencintai Melmell dengan lebih baik.
       </p>
     </Section>
   );
@@ -486,7 +540,7 @@ export default function App() {
 
   const start = () => {
     setStarted(true);
-    window.setTimeout(() => document.getElementById("story")?.scrollIntoView({ behavior: "smooth" }), 320);
+    window.setTimeout(() => document.getElementById("video")?.scrollIntoView({ behavior: "smooth" }), 320);
   };
 
   return (
@@ -503,6 +557,7 @@ export default function App() {
           >
             <Opening onStart={start} />
             <main className="main-content">
+              <VideoSection />
               <Timeline />
               <Gallery />
               <Reasons />
