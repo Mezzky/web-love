@@ -108,14 +108,14 @@ function LetterGate({ onOpen }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
       >
-        <span className="eyebrow">Ucaa untuk Cacakk</span>
+        <span className="eyebrow">Cacakk untuk Melmell</span>
         <h1>Ada surat kecil buat kamu</h1>
-        <p>Pelan-pelan aja. Klik surat ini kalau Cacakk sudah siap membukanya.</p>
+        <p>Pelan-pelan aja. Klik surat ini kalau Melmell sudah siap membukanya.</p>
       </motion.div>
       <motion.button
         className={`floating-letter ${opening ? "is-opening" : ""}`}
         onClick={openLetter}
-        aria-label="Buka surat dari Ucaa"
+        aria-label="Buka surat dari Cacakk"
         initial={{ opacity: 0, scale: 0.82, x: "-50%", y: 28 }}
         animate={{ opacity: 1, scale: 1, x: "-50%", y: [0, -14, 0] }}
         transition={{
@@ -158,8 +158,8 @@ function Opening({ onStart }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.05 }}
       >
-        <span className="eyebrow">Dari Ucaa</span>
-        <h1>Hai Cacakk</h1>
+        <span className="eyebrow">Dari Cacakk</span>
+        <h1>Hai Melmell</h1>
         <p>Aku bikin ini khusus buat kamu. Bukan yang paling sempurna, tapi ini dari hati aku.</p>
         <button className="primary-button" onClick={onStart}>
           <Heart size={19} fill="currentColor" />
@@ -222,7 +222,7 @@ function Gallery() {
   const showNext = () => setActive((active + 1) % memories.length);
 
   return (
-    <Section id="memories" eyebrow="Yang Ucaa simpan" title="Kenangan">
+    <Section id="memories" eyebrow="Yang Cacakk simpan" title="Kenangan">
       <div className="gallery-grid">
         {memories.map((memory, index) => (
           <motion.button
@@ -283,7 +283,7 @@ function Reasons() {
   const isMobile = useIsMobile();
 
   return (
-    <Section id="reasons" eyebrow="Tentang Cacakk" title="Tentangmu">
+    <Section id="reasons" eyebrow="Tentang Melmell" title="Tentangmu">
       <div className="reason-grid">
         {reasons.map((reason, index) => (
           <motion.article
@@ -314,7 +314,7 @@ function Quotes() {
   }, []);
 
   return (
-    <Section id="quotes" eyebrow="Catatan Ucaa" title="Isi Hati Uca">
+    <Section id="quotes" eyebrow="Catatan Cacakk" title="Isi Hati Cacakk">
       <div className="quote-panel">
         <button
           className="icon-button"
@@ -374,7 +374,7 @@ function Counter() {
         ))}
       </div>
       <p className="counter-note">
-        <CalendarHeart size={18} /> Sejak 14 Januari 2024, Ucaa masih belajar mencintai Cacakk dengan lebih baik.
+        <CalendarHeart size={18} /> Sejak 14 Januari 2024, Cacakk masih belajar mencintai Melmell dengan lebih baik.
       </p>
     </Section>
   );
@@ -389,7 +389,7 @@ function LoveLetter() {
   ];
 
   return (
-    <Section id="letter" eyebrow="Surat dari Ucaa" title="Untukmu">
+    <Section id="letter" eyebrow="Surat dari Cacakk" title="Untukmu">
       <article className="letter">
         {paragraphs.map((paragraph, index) => (
           <motion.p
@@ -462,12 +462,12 @@ function Ending() {
         viewport={{ once: true }}
         transition={{ duration: 0.9 }}
       >
-        <span className="eyebrow">Ucaa dan Cacakk</span>
+        <span className="eyebrow">Cacakk dan Melmell</span>
         <h2>Selamanya</h2>
-        <p>Terima kasih sudah hadir, bertahan, dan tetap jadi kamu yang Ucaa sayangi.</p>
+        <p>Terima kasih sudah hadir, bertahan, dan tetap jadi kamu yang Cacakk sayangi.</p>
         <button className="primary-button" onClick={() => { window.location.href = "/flower.html"; }}>
           <Heart size={19} fill="currentColor" />
-          Ucaa Sayang Cacakk
+          Cacakk Sayang Melmell
         </button>
       </motion.div>
     </section>

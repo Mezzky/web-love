@@ -3,7 +3,7 @@ export const timeline = [
     date: "Awal",
     title: "Pertama Kenal",
     description:
-      "Cacakk, dari awal kenal kamu, aku ngerasa ada hal kecil yang beda. Pelan-pelan, kamu jadi tempat yang selalu aku cari.",
+      "Melmell, dari awal kenal kamu, aku ngerasa ada hal kecil yang beda. Pelan-pelan, kamu jadi tempat yang selalu aku cari.",
     icon: "01",
   },
   {
@@ -24,7 +24,7 @@ export const timeline = [
     date: "Hari Ini",
     title: "Aku Pilih Kamu",
     description:
-      "Sampai hari ini, Ucaa masih ingin memilih Cacakk. Bukan cuma saat semuanya mudah, tapi juga saat kita sama-sama belajar.",
+      "Sampai hari ini, Cacakk masih ingin memilih Melmell. Bukan cuma saat semuanya mudah, tapi juga saat kita sama-sama belajar.",
     icon: "04",
   },
 ];
@@ -56,7 +56,7 @@ export const memories = [
   },
   {
     title: "Rumah",
-    caption: "Buat Ucaa, rumah bukan selalu tempat. Kadang rumah itu Cacakk yang sedang cerita.",
+    caption: "Buat Cacakk, rumah bukan selalu tempat. Kadang rumah itu Melmell yang sedang cerita.",
     icon: "RU",
     background: "linear-gradient(135deg, #ffd6e0, #fff0f5)",
   },
